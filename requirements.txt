@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+scikit-learn
+networkx
+python-dotenv
+requests
+openai
+pydantic
