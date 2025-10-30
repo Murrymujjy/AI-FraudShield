@@ -94,6 +94,26 @@ def analyze_network(payload: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from detect import run_isolation
+import pandas as pd
+
+@app.post("/detect-anomalies")
+def detect_anomalies(payload: dict):
+    try:
+        data = payload.get("transactions")
+        if not data:
+            raise HTTPException(status_code=400, detail="Missing transaction data list")
+        
+        df = pd.DataFrame(data)
+        results, _ = run_isolation(df)
+        suspicious = results[results['is_suspicious'] == True]
+        return {
+            "total_transactions": len(df),
+            "suspicious_count": len(suspicious),
+            "suspicious_samples": suspicious.head(10).to_dict(orient="records"),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
