@@ -1,0 +1,31 @@
+# render.yaml — Infrastructure as Code for Render Deployment
+# This file defines both backend (FastAPI) and frontend (Vite) services.
+
+services:
+  # === BACKEND SERVICE ===
+  - type: web
+    name: ai-fraudshield-backend
+    env: python
+    region: oregon  # or frankfurt/london if closer
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port 10000
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false  # you’ll set it in Render dashboard manually
+      - key: PORT
+        value: 10000
+
+  # === FRONTEND SERVICE ===
+  - type: web
+    name: ai-fraudshield-frontend
+    env: node
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm run build
+    staticPublishPath: dist
+    plan: free
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://ai-fraudshield-backend.onrender.com
